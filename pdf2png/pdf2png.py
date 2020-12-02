@@ -4,6 +4,7 @@
 import os
 import glob
 import readline
+import argparse
 from pdf2image import convert_from_path
 
 readline.parse_and_bind('tab: complete')
@@ -22,28 +23,48 @@ arguments = parser.parse_args()
 images = arguments.images
 folder = arguments.folder
 
+
 def conv(image_list):
     """convert a PDF image to png.
     """
     for image in image_list:
-        aux = convert_from_path('image')
+        aux = convert_from_path(image)
+        # import pdb; pdb.set_trace()
         name = image[:-4]+'.png'
         check_file(name)
-        aux.save(name, 'PNG')
+        aux[0].save(name, 'PNG')
         print('{} converted to {}'.format(image, name))
 
 def check_parser():
     """Checks that the parser inputs.
     """
+
+    aux = False
+    input = None
     if (images == None) and (folder == None):
         aux = True
-    elif (images != None) and (folder == None):
+    elif (images != None) and (folder != None):
         raise ValueError('''-i and -d annot be use togheter''')
+    elif folder != None:
+        input = 'folder'
     else:
-        aux = False
-    return aux
+        input = 'images'
+    return aux, input
 
-def check_inputs(images):
+def check_input(input):
+    if input == 'images':
+        image_list = image_input(input)
+    elif input =='folder':
+        image_list = folder_input()
+    return image_list
+
+def folder_input():
+    image_list = [folder +'/'+i for i in os.listdir(folder) if i[-4:]=='.pdf']
+    if len(image_list) == 0:
+        raise FileNotFoundError("No '.pdf' files in directory")
+    return image_list
+
+def image_input(images):
     """Check the content of the Inputs.
 
     """
@@ -55,11 +76,6 @@ def check_inputs(images):
         image_list = []
         image_list.append(images)
 
-    if folder is not None:
-        image_list = [i for i in os.listdir(folder) if i[-4:]=='.pdf']
-        if len(image_list) == 0:
-            raise FileNotFoundError("No '.pdf' files in directory')
-
     return image_list
 
 def check_file(filename):
@@ -68,7 +84,7 @@ def check_file(filename):
     aux = glob.os.path.isfile(filename)
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     while aux:
-        print(f'File {name} already exists.')
+        print(f'File {filename} already exists.')
         # loop to force user to enter only yes or no options
         while True:
             ow = input('Overwrite file (yes/no)? ')
@@ -86,12 +102,16 @@ def check_file(filename):
             aux = False
 
 def main():
-    interactive = check_parser()
+    interactive, input = check_parser()
     if interactive:
-        image_name = input('Please enter image name(s): ')
-        image_list = check_inputs(image_name)
-    conv(image_lidst)
+        images = input('Please enter image name(s): ')
+        image_list = images.split(' ')
+    else:
+        image_list = check_input(input)
+
+    conv(image_list)
 
 
 if __name__ == '__main__':
     main()
+

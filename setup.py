@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/hsalas/pdf2png",
     packages=setuptools.find_packages(),
-    install_requires=['os', 'glob', 'readline', 'pdf2image'],
+    install_requires=['readline', 'pdf2image'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

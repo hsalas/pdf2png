@@ -29,7 +29,6 @@ def conv(image_list):
     """
     for image in image_list:
         aux = convert_from_path(image)
-        # import pdb; pdb.set_trace()
         name = image[:-4]+'.png'
         check_file(name)
         aux[0].save(name, 'PNG')
@@ -53,7 +52,7 @@ def check_parser():
 
 def check_input(input):
     if input == 'images':
-        image_list = image_input(input)
+        image_list = image_input()
     elif input =='folder':
         image_list = folder_input()
     return image_list
@@ -64,7 +63,7 @@ def folder_input():
         raise FileNotFoundError("No '.pdf' files in directory")
     return image_list
 
-def image_input(images):
+def image_input():
     """Check the content of the Inputs.
 
     """
